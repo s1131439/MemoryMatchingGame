@@ -191,5 +191,17 @@
   <ItemGroup>
     <None Include="Resources\card_back.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\practice_complete.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\level2_complete.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\level1_complete.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\all_complete.wav" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
