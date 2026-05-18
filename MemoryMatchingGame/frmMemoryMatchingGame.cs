@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -24,12 +25,32 @@ namespace MemoryMatchingGame
         int level = 1;
         int gridSize = 2;
 
+        // 淡化動畫用
+        Dictionary<PictureBox, int> fadeCards =
+            new Dictionary<PictureBox, int>();
+
+        // 固定視窗大小（以 6x6 為基準）
+        const int FORM_WIDTH = 700;
+        const int FORM_HEIGHT = 760;
+
         public frmMemoryMatchingGame()
         {
             InitializeComponent();
 
+            // 固定視窗大小
+            this.ClientSize = new Size(FORM_WIDTH, FORM_HEIGHT);
+
+            // 禁止調整大小
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+
+            this.CenterToScreen();
+
             LoadImages();
             SetLevel(1);
+
+            // timerFade 設定
+            timerFade.Interval = 30;
         }
 
         // =====================
@@ -58,7 +79,7 @@ namespace MemoryMatchingGame
         }
 
         // =====================
-        // 關卡 + 視窗大小（已修正）
+        // 設定關卡
         // =====================
         private void SetLevel(int lv)
         {
@@ -68,28 +89,22 @@ namespace MemoryMatchingGame
             {
                 case 1:
                     gridSize = 2;
-                    this.ClientSize = new Size(300, 380);
                     break;
 
                 case 2:
                     gridSize = 4;
-                    this.ClientSize = new Size(480, 560);
                     break;
 
                 case 3:
                     gridSize = 6;
-                    this.ClientSize = new Size(640, 660);
                     break;
             }
-
-            // ⭐ 重點：每次切關卡都置中螢幕
-            this.CenterToScreen();
 
             RestartGame();
         }
 
         // =====================
-        // 建立盤面（置中）
+        // 建立棋盤（自動縮放）
         // =====================
         private void CreateBoard()
         {
@@ -101,14 +116,27 @@ namespace MemoryMatchingGame
 
             gameCards.Clear();
 
-            int cardSize = (gridSize == 6) ? 60 : 80;
             int margin = 10;
 
-            int boardSize =
+            // 預留上下空間
+            int usableWidth = this.ClientSize.Width - 40;
+            int usableHeight = this.ClientSize.Height - 120;
+
+            // 動態計算卡片大小
+            int cardSize = Math.Min(
+                (usableWidth - (gridSize - 1) * margin) / gridSize,
+                (usableHeight - (gridSize - 1) * margin) / gridSize
+            );
+
+            int boardWidth =
                 gridSize * cardSize + (gridSize - 1) * margin;
 
-            int startX = (this.ClientSize.Width - boardSize) / 2;
-            int startY = (this.ClientSize.Height - boardSize) / 2;
+            int boardHeight =
+                gridSize * cardSize + (gridSize - 1) * margin;
+
+            // 棋盤置中
+            int startX = (this.ClientSize.Width - boardWidth) / 2;
+            int startY = (this.ClientSize.Height - boardHeight) / 2 + 20;
 
             for (int row = 0; row < gridSize; row++)
             {
@@ -151,6 +179,8 @@ namespace MemoryMatchingGame
 
             lockClick = false;
 
+            fadeCards.Clear();
+
             List<Image> cards = new List<Image>();
 
             int pairCount = (gridSize * gridSize) / 2;
@@ -165,8 +195,13 @@ namespace MemoryMatchingGame
 
             for (int i = 0; i < gameCards.Count; i++)
             {
-                gameCards[i].Image = Properties.Resources.card_back;
-                gameCards[i].Tag = new Tuple<Image, bool>(cards[i], false);
+                gameCards[i].Enabled = true;
+
+                gameCards[i].Image =
+                    Properties.Resources.card_back;
+
+                gameCards[i].Tag =
+                    new Tuple<Image, bool>(cards[i], false);
             }
         }
 
@@ -184,28 +219,46 @@ namespace MemoryMatchingGame
             if (lockClick) return;
 
             PictureBox pic = (PictureBox)sender;
+
             var tag = (Tuple<Image, bool>)pic.Tag;
 
+            // 已翻開
             if (tag.Item2) return;
 
+            // 顯示圖片
             pic.Image = tag.Item1;
-            pic.Tag = new Tuple<Image, bool>(tag.Item1, true);
 
+            // 更新狀態
+            pic.Tag = new Tuple<Image, bool>(
+                tag.Item1,
+                true
+            );
+
+            // 第一張
             if (firstCard == null)
             {
                 firstCard = pic;
                 return;
             }
 
+            // 第二張
             secondCard = pic;
 
-            var img1 = ((Tuple<Image, bool>)firstCard.Tag).Item1;
-            var img2 = ((Tuple<Image, bool>)secondCard.Tag).Item1;
+            var img1 =
+                ((Tuple<Image, bool>)firstCard.Tag).Item1;
 
+            var img2 =
+                ((Tuple<Image, bool>)secondCard.Tag).Item1;
+
+            // 配對成功
             if (img1 == img2)
             {
+                StartFadeEffect(firstCard);
+                StartFadeEffect(secondCard);
+
                 firstCard = null;
                 secondCard = null;
+
                 CheckWin();
             }
             else
@@ -216,35 +269,164 @@ namespace MemoryMatchingGame
         }
 
         // =====================
-        // 計時
+        // 開始淡化動畫
         // =====================
-        private void timer1_Tick(object sender, EventArgs e)
+        private void StartFadeEffect(PictureBox pic)
+        {
+            fadeCards[pic] = 255;
+
+            // 已完成不能再點
+            pic.Enabled = false;
+
+            timerFade.Start();
+        }
+
+        // =====================
+        // 淡化動畫 Timer
+        // =====================
+        private void timerFade_Tick(object sender, EventArgs e)
+        {
+            List<PictureBox> completed =
+                new List<PictureBox>();
+
+            foreach (var item in fadeCards.ToList())
+            {
+                PictureBox pic = item.Key;
+                int alpha = item.Value;
+
+                // 每次降低透明度
+                alpha -= 15;
+
+                // 最低透明度
+                if (alpha <= 120)
+                {
+                    alpha = 120;
+                    completed.Add(pic);
+                }
+
+                fadeCards[pic] = alpha;
+
+                // 更新透明圖片
+                pic.Image = SetImageOpacity(
+                    ((Tuple<Image, bool>)pic.Tag).Item1,
+                    alpha / 255f
+                );
+            }
+
+            // 移除完成動畫
+            foreach (var pic in completed)
+            {
+                fadeCards.Remove(pic);
+            }
+
+            // 全部完成後停止 Timer
+            if (fadeCards.Count == 0)
+            {
+                timerFade.Stop();
+            }
+        }
+
+        // =====================
+        // 設定圖片透明度
+        // =====================
+        private Image SetImageOpacity(
+            Image image,
+            float opacity)
+        {
+            Bitmap bmp = new Bitmap(
+                image.Width,
+                image.Height
+            );
+
+            using (Graphics gfx =
+                Graphics.FromImage(bmp))
+            {
+                ColorMatrix matrix =
+                    new ColorMatrix();
+
+                matrix.Matrix33 = opacity;
+
+                ImageAttributes attributes =
+                    new ImageAttributes();
+
+                attributes.SetColorMatrix(
+                    matrix,
+                    ColorMatrixFlag.Default,
+                    ColorAdjustType.Bitmap
+                );
+
+                gfx.DrawImage(
+                    image,
+                    new Rectangle(
+                        0,
+                        0,
+                        bmp.Width,
+                        bmp.Height
+                    ),
+                    0,
+                    0,
+                    image.Width,
+                    image.Height,
+                    GraphicsUnit.Pixel,
+                    attributes
+                );
+            }
+
+            return bmp;
+        }
+
+        // =====================
+        // 計時器
+        // =====================
+        private void timer1_Tick(
+            object sender,
+            EventArgs e)
         {
             timeCount++;
 
             int min = timeCount / 60;
             int sec = timeCount % 60;
 
-            label1.Text = $"Level {level}  Time: {min:D2}:{sec:D2}";
+            label1.Text =
+                $"Level {level}   Time: {min:D2}:{sec:D2}";
         }
 
         // =====================
         // 翻回卡片
         // =====================
-        private void timer2_Tick(object sender, EventArgs e)
+        private void timer2_Tick(
+            object sender,
+            EventArgs e)
         {
             timer2.Stop();
 
-            var t1 = (Tuple<Image, bool>)firstCard.Tag;
-            firstCard.Image = Properties.Resources.card_back;
-            firstCard.Tag = new Tuple<Image, bool>(t1.Item1, false);
+            var t1 =
+                (Tuple<Image, bool>)firstCard.Tag;
 
-            var t2 = (Tuple<Image, bool>)secondCard.Tag;
-            secondCard.Image = Properties.Resources.card_back;
-            secondCard.Tag = new Tuple<Image, bool>(t2.Item1, false);
+            firstCard.Image =
+                Properties.Resources.card_back;
+
+            firstCard.Tag =
+                new Tuple<Image, bool>(
+                    t1.Item1,
+                    false
+                );
+
+            var t2 =
+                (Tuple<Image, bool>)secondCard.Tag;
+
+            secondCard.Image =
+                Properties.Resources.card_back;
+
+            secondCard.Tag =
+                new Tuple<Image, bool>(
+                    t2.Item1,
+                    false
+                );
 
             firstCard = null;
             secondCard = null;
+
             lockClick = false;
         }
 
@@ -255,13 +437,18 @@ namespace MemoryMatchingGame
         {
             foreach (var pic in gameCards)
             {
-                var tag = (Tuple<Image, bool>)pic.Tag;
-                if (!tag.Item2) return;
+                var tag =
+                    (Tuple<Image, bool>)pic.Tag;
+
+                if (!tag.Item2)
+                    return;
             }
 
             timer1.Stop();
 
-            MessageBox.Show($"Level {level} Complete!\nTime: {timeCount} sec");
+            MessageBox.Show(
+                $"Level {level} Complete!\nTime: {timeCount} sec"
+            );
 
             if (level < 3)
             {
@@ -269,16 +456,62 @@ namespace MemoryMatchingGame
             }
             else
             {
-                MessageBox.Show("Congratulations!\nAll Levels Complete!");
+                MessageBox.Show(
+                    "Congratulations!\nAll Levels Complete!"
+                );
             }
         }
 
         // =====================
-        // 重置
+        // Restart
         // =====================
-        private void restartToolStripMenuItem_Click(object sender, EventArgs e)
+        private void restartToolStripMenuItem_Click(
+            object sender,
+            EventArgs e)
         {
-            SetLevel(1);
+            DialogResult result =
+                MessageBox.Show(
+                    "你確定要重新開始遊戲嗎？\n目前進度將不會保留。",
+                    "重新開始",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question
+                );
+
+            if (result == DialogResult.Yes)
+            {
+                SetLevel(1);
+            }
+        }
+
+        // =====================
+        // 關閉確認
+        // =====================
+        private void frmMemoryMatchingGame_FormClosing(
+            object sender,
+            FormClosingEventArgs e)
+        {
+            DialogResult result =
+                MessageBox.Show(
+                    "你確定要離開遊戲嗎？\n遊戲紀錄將不會保留。",
+                    "離開遊戲",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning
+                );
+
+            if (result == DialogResult.No)
+            {
+                e.Cancel = true;
+            }
+        }
+
+        // =====================
+        // Exit
+        // =====================
+        private void exitToolStripMenuItem_Click(
+            object sender,
+            EventArgs e)
+        {
+            this.Close();
         }
     }
 }
