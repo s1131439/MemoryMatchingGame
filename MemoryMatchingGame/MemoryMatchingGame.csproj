@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0874749C-083F-413D-AC8B-054A66F8E634}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>MemoryMatchingGame</RootNamespace>
+    <AssemblyName>MemoryMatchingGame</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="frmMemoryMatchingGame.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmMemoryMatchingGame.Designer.cs">
+      <DependentUpon>frmMemoryMatchingGame.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="frmMemoryMatchingGame.resx">
+      <DependentUpon>frmMemoryMatchingGame.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\羽球.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\足球.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\保齡球.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\美式足球.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\哨子.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\桌球拍.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\訓練錐.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\高爾夫球.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\排球.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\棒球.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\蛙鏡.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\跑鞋.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\運動服.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\槓鈴.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\網球.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\獎盃.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\獎牌.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\籃球.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\american_football.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\badminton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\barbell.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\baseball.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\basketball.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bowling.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\golf_ball.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\medal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\running_shoes.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\soccer.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sportswear.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\swimming_goggles.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\table_tennis_paddle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tennis.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\training_cone.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\trophy.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\volleyball.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\whistle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\card_back.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
