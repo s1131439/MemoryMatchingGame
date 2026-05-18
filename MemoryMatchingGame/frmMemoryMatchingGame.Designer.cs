@@ -43,6 +43,7 @@
             // 
             // restartToolStripMenuItem
             // 
+            this.restartToolStripMenuItem.BackColor = System.Drawing.Color.DarkSlateGray;
             this.restartToolStripMenuItem.ForeColor = System.Drawing.Color.WhiteSmoke;
             this.restartToolStripMenuItem.Name = "restartToolStripMenuItem";
             this.restartToolStripMenuItem.Size = new System.Drawing.Size(224, 34);
@@ -84,6 +85,7 @@
             // 
             // exitToolStripMenuItem
             // 
+            this.exitToolStripMenuItem.BackColor = System.Drawing.Color.DarkSlateGray;
             this.exitToolStripMenuItem.ForeColor = System.Drawing.Color.WhiteSmoke;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(224, 34);
